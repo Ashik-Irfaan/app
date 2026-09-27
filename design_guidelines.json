@@ -1,0 +1,197 @@
+{
+  "app_name": "Mind Well",
+  "personality": "1 iOS-Native Clean",
+  "personality_one_liner": "A calm, structured, and highly secure environment that balances professional authority with empathetic wellness tracking for uniformed forces.",
+  "color": {
+    "surface": "#F4F6F8",
+    "onSurface": "#0A192F",
+    "surfaceSecondary": "#FFFFFF",
+    "onSurfaceSecondary": "#0A192F",
+    "surfaceTertiary": "#EAECEF",
+    "onSurfaceTertiary": "#0A192F",
+    "surfaceInverse": "#0A192F",
+    "onSurfaceInverse": "#FFFFFF",
+    "brand": "#112B3C",
+    "brandPrimary": "#112B3C",
+    "onBrandPrimary": "#FFFFFF",
+    "brandSecondary": "#205375",
+    "onBrandSecondary": "#FFFFFF",
+    "brandTertiary": "#E6EDF2",
+    "onBrandTertiary": "#112B3C",
+    "success": "#4E9F3D",
+    "onSuccess": "#FFFFFF",
+    "warning": "#F6A90A",
+    "onWarning": "#FFFFFF",
+    "error": "#D94C4C",
+    "onError": "#FFFFFF",
+    "info": "#637A8C",
+    "onInfo": "#FFFFFF",
+    "border": "#E5E7EB",
+    "borderStrong": "#D1D5DB",
+    "divider": "#F0F1F3",
+    "muted": "#6B7280",
+    "onBrand": "#FFFFFF"
+  },
+  "typography": {
+    "displayFontFamily": "PlusJakartaSans",
+    "textFontFamily": "PlusJakartaSans",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24
+    }
+  },
+  "spacing": {
+    "rule": "Generous spacing. Ensure buttons and inputs are not cramped, use hitSlop for small icons.",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 6,
+    "md": 12,
+    "lg": 20,
+    "pill": 999
+  },
+  "shadow_tier": "1",
+  "navigation": "bottom_tabs",
+  "icon_set": "Ionicons",
+  "glassmorphism": {
+    "enabled": true,
+    "do's": [
+      "Use on sticky headers over scrolling content",
+      "Use on bottom tab bar",
+      "Use on featured/hero card overlays over imagery",
+      "Ensure text readability by using translucent tint under the blur"
+    ],
+    "dont's": [
+      "Never apply to form fields",
+      "Never apply to standard list rows",
+      "Do not over-stack (max 2 glass surfaces per screen)"
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Login",
+      "purpose": "A secure, identifier-first authentication portal for both Personnel and Therapists.",
+      "states": {
+        "loading": "Centered spinner with a 'Verifying credentials...' text.",
+        "empty": "N/A",
+        "error": "Readable inline error message or toast showing login failure."
+      },
+      "layout": "Clean, full-screen structure with an identifier-first flow (Service ID or Email first, then password). Use ample padding, a deep teal abstract hero background in the upper half with gradient-to-dark scrim, and modular input fields below to establish trust and professional authority."
+    },
+    {
+      "name": "PersonnelHome",
+      "purpose": "A calming daily dashboard showing stress history, current risk level, and quick wellness metrics.",
+      "states": {
+        "loading": "Skeleton loaders for the chart and wellness cards.",
+        "empty": "Illustration of a calm nature scene with a prompt to 'Start your first wellness check'.",
+        "error": "Failed to load data message with a 'Retry' button."
+      },
+      "layout": "Organ-based grouping. A featured hero card at the top displaying the overall Wellness Risk Level (Low/Medium/High) with a glassmorphic overlay. Below it, a line chart showing stress history, followed by a grid (2-col) of today's metrics (Sleep, Workload, Mood) using visual data representation instead of raw numbers."
+    },
+    {
+      "name": "WellnessAssessment",
+      "purpose": "A focused, low-stress 10+ question check-in to evaluate personal and work-related well-being.",
+      "states": {
+        "loading": "Spinner loading the question set.",
+        "empty": "N/A",
+        "error": "Could not submit assessment, Retry button."
+      },
+      "layout": "Single column card layout. One question per screen with large, tappable option chips or sliders. A sticky 'Next' primary CTA anchored at the bottom (inside a fixed container avoiding keyboard/scroll issues)."
+    },
+    {
+      "name": "RiskResult",
+      "purpose": "Actionable feedback screen explaining the wellness score and providing a clear support pathway.",
+      "states": {
+        "loading": "Spinner calculating risk.",
+        "empty": "N/A",
+        "error": "Error loading results, Retry button."
+      },
+      "layout": "Hero layout with a solid top section indicating risk tier via color (Soft Green for Low, Warning for Medium, Error for High), followed by a breakdown list of 'Top Contributing Factors'. A sticky primary CTA at the bottom connects them to the suggested support pathway (AI Chat, Tips, or Counsellor)."
+    },
+    {
+      "name": "AIChat",
+      "purpose": "A friendly, conversational interface providing motivational support.",
+      "states": {
+        "loading": "Skeleton chat bubbles.",
+        "empty": "Calm abstract therapist illustration in the center with a 'How are you feeling today?' prompt.",
+        "error": "Connection error banner at top, Retry button."
+      },
+      "layout": "Standard chat interface. A sticky header with a back button. Messages wrapped in brandTertiary for AI and brandPrimary for user. Input field sticky at bottom inside KeyboardAvoidingView."
+    },
+    {
+      "name": "WearableConnect",
+      "purpose": "Sync hub for smartwatches to pull live heart rate and sleep data.",
+      "states": {
+        "loading": "Scanning for devices spinner.",
+        "empty": "Minimalist smartwatch tracker illustration, prompt to 'Pair a device'.",
+        "error": "Could not connect to device, Retry button."
+      },
+      "layout": "List-based layout of available devices. Large hero image at the top of a smartwatch on a white background, followed by a single-column list of Bluetooth/wearable connections."
+    },
+    {
+      "name": "TherapistDashboard",
+      "purpose": "A clinical overview tool for therapists to manage high-risk personnel and track trends.",
+      "states": {
+        "loading": "Skeleton list for the risk pool.",
+        "empty": "No high-risk personnel illustration.",
+        "error": "Failed to sync patient data, Retry button."
+      },
+      "layout": "Minimalist, data-dense view. Uses tabs or segmented controls for 'Alerts', 'Trends', and 'Follow-up'. Uses list rows with clear visual indicators for risk status. Anonymized identifiers in place of names for privacy."
+    }
+  ],
+  "images": {
+    "login_hero_bg": {
+      "url": "https://images.unsplash.com/photo-1669295384050-a1d4357bd1d7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGRlZXAlMjB0ZWFsJTIwd2F2ZXMlMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc5MDQ5MTg0Nnww&ixlib=rb-4.1.0&q=85",
+      "alt": "abstract deep teal waves background"
+    },
+    "personnel_home_empty": {
+      "url": "https://images.unsplash.com/photo-1614854262318-831574f15f1f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwxfHxjYWxtJTIwbmF0dXJlJTIwc29mdCUyMGdyZWVuJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3OTA0OTE4NDV8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "A smooth gradient shifting from light green to soft teal"
+    },
+    "ai_chat_empty": {
+      "url": "https://images.unsplash.com/photo-1699465301322-362016624dd7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1NzZ8MHwxfHNlYXJjaHwxfHxjYWxtJTIwdGhlcmFwaXN0JTIwYWJzdHJhY3QlMjBpbGx1c3RyYXRpb258ZW58MHx8fHwxNzkwNDkxODU3fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Abstract composition of layered brown and beige brushstrokes on a light background"
+    },
+    "wearable_connect_hero": {
+      "url": "https://images.unsplash.com/photo-1631863552008-f6491c3c9062?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NjZ8MHwxfHNlYXJjaHwxfHxtaW5pbWFsaXN0JTIwc21hcnR3YXRjaCUyMHRyYWNrZXIlMjB3aGl0ZSUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzkwNDkxODU3fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "a white apple watch sitting on top of a black surface"
+    }
+  },
+  "haptics": {
+    "primary_button_press": "impactLight",
+    "assessment_option_select": "selection",
+    "tab_change": "selection",
+    "success_action": "notificationSuccess",
+    "error_action": "notificationError"
+  },
+  "instructions_to_main_agent": [
+    "Strictly follow the color palette: Deep Teal/Navy is the primary brand color, supported by Soft Green for success/wellness highlights. Do not use generic AI-blue or purple.",
+    "Implement an identifier-first login flow. Avoid single-screen multi-input if possible, to enhance the feeling of professional security.",
+    "Use 'Plus Jakarta Sans' for all text, maintaining strict font weight limits (max 500). Use size for hierarchy, not bold weights.",
+    "Ensure the Personnel Home dashboard uses visual representation for metrics (progress rings, trend lines) rather than raw numerical data.",
+    "For any text placed on background imagery (e.g., login hero), you must apply a vertical 3-stop gradient scrim (transparent to dark) to guarantee WCAG contrast ratios.",
+    "Ensure primary CTA buttons are always sticky at the bottom of the screen above the home indicator, outside of the scroll view.",
+    "Include empty, loading, and error states for all data-fetching screens (Dashboard, Risk Results). Ensure empty states use the provided imagery or calm illustrations."
+  ]
+}

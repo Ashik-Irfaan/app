@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "Mind Well",
+    "slug": "mindwell",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "mindwell",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.emergent.mindwellwellness.jqmvks"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#112B3C"
+      },
+      "package": "com.emergent.mindwellwellness.jqmvks"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-image.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#112B3C"
+        }
+      ],
+      "expo-font",
+      "expo-image",
+      "expo-secure-store",
+      "expo-web-browser",
+      "expo-status-bar",
+      "@react-native-vector-icons/ionicons"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

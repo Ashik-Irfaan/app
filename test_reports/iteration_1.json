@@ -1,0 +1,43 @@
+{
+  "summary": "Backend: 25/25 pytest cases pass (auth, register+duplicate 409, consent, 12-question assessment with all-0 -> low & all-3 -> high with alert_created, missing answers 400, dashboard, wearable connect/disconnect, chat LLM (real gpt-5.4-mini call succeeded ~2-3s), support/request, therapist overview with anonymized MW-XXXX ids, alerts list + followup persistence, personnel detail, role-based 403). Frontend: Login (role segment, identifier-first flow, wrong-password error 'Invalid credentials'), Personnel Home for CRPF-1002 verified (score=81 HIGH, all home-* testIDs present, chart+attention banner+today grid render), Therapist dashboard verified (stats + filter chips + 5 anonymized personnel rows + alerts screen with follow-up buttons). Assessment submission proved end-to-end via backend (CRPF-1001 score jumped to 100/HIGH after 12x option-3 submission) but the result-screen UI + Chat/Wearable/Profile screens could not be fully verified through Playwright because an Expo/RN dev-mode LogBox full-screen ERROR overlay pops up as soon as the LineChart mounts (react-native-gifted-charts injects RN-only props like onPressOut/onStartShouldSetResponder that RN-Web classifies as errors). Deprecated packages / RN issues detected: react-native-gifted-charts triggering unknown-event-handler errors on web preview; deprecated 'shadow*' style props warning; 'props.pointerEvents is deprecated' warning; 'TouchableMixin is deprecated' warning.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "LogBox dev overlay", "issue": "Full-screen 'Unknown event handler property onPressOut' console-error overlay from react-native-gifted-charts LineChart intercepts all taps on Home/Assessment result/Chat/Wearable/Profile screens in the web preview. Users on the deployed web preview see the error overlay and cannot interact until they dismiss it. Reproduce: log in as any personnel; the LineChart in components/stress-chart.tsx (line 25) triggers it.", "testID": "home-stress-chart", "priority": "HIGH"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Login", "issues": ["Layout, spacing and touch targets look good on 390x844 (buttons ~52px tall). No contrast issues."]}
+    ],
+    "react_native_issues": [
+      {"component": "react-native-gifted-charts LineChart", "issue": "Emits web-incompatible responder props (onStartShouldSetResponder, onResponderGrant/Move/Release/Terminate, onPressOut) causing RN-Web to log Console Errors that pop the LogBox full-screen overlay in dev mode. Reference: /app/frontend/components/stress-chart.tsx:25"},
+      {"component": "shadow* style props", "issue": "Deprecation warning 'shadow* style props are deprecated. Use boxShadow'. Search for `shadowColor`, `shadowOffset`, `shadowOpacity`, `shadowRadius` in the codebase and migrate to boxShadow on web / keep native-only via Platform.select."},
+      {"component": "pointerEvents prop", "issue": "'props.pointerEvents is deprecated. Use style.pointerEvents'. Migrate any `<View pointerEvents=...>` to `<View style={{ pointerEvents: ... }}>`."},
+      {"component": "TouchableMixin (TouchableOpacity)", "issue": "'TouchableMixin is deprecated. Please use Pressable.' Replace TouchableOpacity usages with Pressable."}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Suppress the dev-mode LogBox error overlay in the root layout with `LogBox.ignoreLogs(['Unknown event handler property', 'shadow*', 'TouchableMixin', 'props.pointerEvents'])` so it does not cover the app in the web preview (this is the highest priority as it blocks all UI on the deployed preview).",
+    "Ideally wrap or replace the LineChart on web (Platform.OS === 'web') with a chart library that does not inject RN responder props, or filter those props before passing to gifted-charts on web.",
+    "Migrate deprecated APIs: shadow* -> boxShadow, pointerEvents prop -> style.pointerEvents, TouchableOpacity -> Pressable.",
+    "Consider verifying via the fixed environment that the assessment-result screen, chat, wearable and profile flows render correctly after the LogBox is silenced."
+  ],
+  "critical_code_review_comments": [
+    "server.py is 525 lines - within limits but consider extracting routers (auth, assessment, therapist, chat) into separate modules for maintainability.",
+    "Password bcrypt round=12 is good. JWT includes iss/exp/iat/sub/role and role is verified against DB on each request - solid.",
+    "MongoDB _id is consistently converted to string 'id' via from_mongo/serialize_assessment; no ObjectId leaks in responses.",
+    "Risk engine weights sum to 1.0 exactly (0.08+0.07+0.09+0.05+0.07+0.08+0.12+0.10+0.12+0.11+0.06+0.05 = 1.00) so max base score is 100. All-3 answers deterministically yield score 100 -> level high, all-0 -> 0 -> low; boundary buckets (<35 low, 35-<60 medium, >=60 high) match the spec.",
+    "chat endpoint stores the user message BEFORE calling LlmChat; if LLM raises, the user message is persisted but there is no assistant reply - reasonable but consider deleting the orphan user doc on failure."
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py"],
+  "success_rate": {"backend": "100% (25/25)", "frontend": "Login + Home + Therapist dashboard/alerts list verified (~60%); Assessment submission verified indirectly via backend + updated dashboard score; result screen, chat, wearable, profile UI not directly verifiable due to LogBox overlay"},
+  "seed_data_creation": "No manual seed created. Server seed.py auto-creates the 5 CRPF-100X personnel + dr.meera therapist + assessment/alert history. Backend test suite creates ephemeral TEST_ users (personnel + therapist) via register but does not clean them up.",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend is 100% green - reuse /app/backend/tests/backend_test.py. To retest frontend after fix, before starting any UI flow inject `LogBox.ignoreAllLogs()` via `page.evaluate` or wait for main agent to silence LogBox in root layout. Frontend URL: https://mindwell-wellness-1.preview.emergentagent.com. Login body: {identifier, password, role}. CRPF-1002/Mindwell@123 is the HIGH-risk personnel with an open alert - best for validating home-attention-banner and result screen. To submit assessment: click home-take-assessment-button, then repeat for i in 0..11: click assessment-option-3, click assessment-next-button (label switches to 'See my result' on Q12).",
+  "rca_of_issue": "Root cause of the UI blocker: react-native-gifted-charts LineChart component (used inside components/stress-chart.tsx line 25) forwards native-only responder props (onStartShouldSetResponder, onResponderTerminationRequest, onResponderGrant/Move/Release/Terminate, onPressOut) to underlying <View> elements. React DOM does not recognise these, so react-native-web falls back to logging them as Console Errors via LogBox. In Expo dev mode any LogBox error auto-mounts a full-screen error dialog above the app root, blocking clicks. The errors are cosmetic (chart still renders fine underneath) - either silence LogBox in dev or filter the props before passing to LineChart on web. Prod builds strip LogBox so the issue only manifests in the current preview environment."
+}
